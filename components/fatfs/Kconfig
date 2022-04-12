@@ -181,6 +181,42 @@ menu "FAT Filesystem support"
             optimizing for internal memory size.
 
 
+    choice FATFS_USE_STRFUNC
+        prompt "String functions mode"
+        default FATFS_USE_STRFUNC_DISABLE
+        help
+            This option switches string functions,
+            f_gets(), f_putc(), f_puts() and f_printf().
+
+        config FATFS_USE_STRFUNC_DISABLE
+            bool "Disable string functions"
+        config FATFS_USE_STRFUNC_ENABLE
+            bool "Enable without LF-CRLF conversion"
+        config FATFS_USE_STRFUNC_ENABLE_WTH_LF_TO_CRLF
+            bool "Enable with LF-CRLF conversion"
+    endchoice
+
+
+    choice FATFS_USE_FIND
+        prompt "Filtered directory read mode"
+        default FATFS_USE_FIND_DISABLE
+        help
+            This option switches filtered directory read functions,
+            f_findfirst() and f_findnext().
+            
+            0: Disable
+            1: Enable
+            2: Enable with matching altname[] too
+
+        config FATFS_USE_FIND_DISABLE
+            bool "Disable"
+        config FATFS_USE_FIND_ENABLE
+            bool "Enable"
+        config FATFS_USE_FIND_ENABLE_WTH_ALTNAME
+            bool "Enable with matching altname[] too"
+    endchoice
+
+
     config FATFS_USE_FASTSEEK
         bool "Enable fast seek algorithm when using lseek function through VFS FAT"
         default n
@@ -201,5 +237,45 @@ menu "FAT Filesystem support"
             CLMT buffer used by this algorithm in 32-bit word units.
             This value should be chosen based on prior knowledge of
             maximum elements of each file entry would store.
+
+
+    choice FATFS_RELATIVE_PATH
+        prompt "Support for relative path"
+        default FATFS_RELATIVE_PATH_DISABLE
+        help
+            This option configures support for relative path.
+
+            0: Disable relative path and remove related functions
+            1: Enable relative path. f_chdir() and f_chdrive() are available
+            2: f_getcwd() function is available in addition to 1
+
+        config FATFS_RELATIVE_PATH_DISABLE
+            bool "Disable relative path and remove related functions"
+        config FATFS_RELATIVE_PATH_ENABLE
+            bool "Enable relative path. f_chdir() and f_chdrive() are available"
+        config FATFS_RELATIVE_PATH_ENABLE_WTH_GETCWD
+            bool "f_getcwd() function is available in addition to Enable"
+    endchoice
+
+
+    config FATFS_VOLUMES
+        int "Number of volumes (logical drives) to be used"
+        default 1
+        range 1 10
+        help
+            Number of volumes (logical drives) to be used. (1-10)
+
+
+    config FATFS_MULTI_PARTITION
+        bool "Support multiple volumes on the physical drive"
+        default y
+        help
+            This option switches support for multiple volumes on the physical drive.
+            
+            By default (0), each logical drive number is bound to the same physical drive
+            number and only an FAT volume found on the physical drive will be mounted.
+            When this function is enabled (1), each logical drive number can be bound to
+            arbitrary physical drive and partition listed in the VolToPart[]. Also f_fdisk()
+            funciton will be available.
 
 endmenu
